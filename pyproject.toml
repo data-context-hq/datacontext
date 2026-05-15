@@ -1,0 +1,53 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "datacontext"
+version = "0.1.0"
+description = "Runtime attribution for data access in Python."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "Apache-2.0" }
+authors = [
+  { name = "DataContext contributors" }
+]
+keywords = ["database", "observability", "tracing", "attribution", "opentelemetry"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: Apache Software License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Typing :: Typed",
+]
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/data-context-hq/datacontext"
+Repository = "https://github.com/data-context-hq/datacontext"
+Issues = "https://github.com/data-context-hq/datacontext/issues"
+
+[project.optional-dependencies]
+otel = [
+  "opentelemetry-api>=1.20",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/datacontext"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "/src",
+  "/tests",
+  "/examples",
+  "/CONTRIBUTING.md",
+  "/README.md",
+  "/SECURITY.md",
+  "/LICENSE",
+  "/pyproject.toml",
+]
