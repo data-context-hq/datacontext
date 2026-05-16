@@ -1,5 +1,12 @@
 # DataContext
 
+[![Tests](https://github.com/data-context-hq/datacontext/actions/workflows/tests.yml/badge.svg)](https://github.com/data-context-hq/datacontext/actions/workflows/tests.yml)
+[![PyPI](https://img.shields.io/pypi/v/datacontext.svg)](https://pypi.org/project/datacontext/)
+[![Python](https://img.shields.io/pypi/pyversions/datacontext.svg)](https://pypi.org/project/datacontext/)
+[![License](https://img.shields.io/pypi/l/datacontext.svg)](LICENSE)
+[![Discussions](https://img.shields.io/badge/GitHub-Discussions-2ea44f)](https://github.com/data-context-hq/datacontext/discussions)
+[![Roadmap](https://img.shields.io/badge/Roadmap-DataContext-blue)](ROADMAP.md)
+
 Runtime attribution for data access in Python.
 
 DataContext helps developers answer a simple question:
@@ -8,7 +15,21 @@ DataContext helps developers answer a simple question:
 
 DataContext gives humans and agents more context for understanding data access patterns and improving how applications use databases and data platforms.
 
-DataContext is pre-1.0. The first goal is attribution, with a small API designed to evolve carefully as integrations mature.
+DataContext is early and intentionally small. The core event model is designed to stay stable, while integrations and APIs will evolve with real-world usage.
+
+## How It Works
+
+```mermaid
+flowchart LR
+    app[Application code] --> ctx[Runtime context]
+    app --> inst[DataContext instrumentation]
+    ctx --> event[datacontext.query event]
+    inst --> event
+    event --> stdout[stdout JSONL]
+    event --> file[file JSONL]
+    event --> callback[callback sink]
+    event --> otel[OpenTelemetry context]
+```
 
 ## Why DataContext?
 
@@ -21,6 +42,17 @@ That makes it hard to answer:
 - Which actor, tenant, or session was involved?
 
 DataContext connects query events to runtime context, source callsites, and OpenTelemetry trace context when available.
+
+## Current Scope
+
+DataContext currently focuses on:
+
+- manual query instrumentation with `trace_query(...)` and `capture_query(...)`,
+- wrapping explicit data-access functions with `instrument_function(...)`,
+- JSONL, callback, and OpenTelemetry-oriented sinks,
+- correlating query events with runtime context and active OpenTelemetry spans.
+
+It does not automatically instrument database drivers yet.
 
 ## Install
 
@@ -159,6 +191,8 @@ datacontext.capture_query(
 )
 ```
 
+## Privacy and Query Text
+
 DataContext always emits `query_fingerprint` by default. Raw query text is not emitted unless you explicitly opt in.
 
 To include normalized query shape text, opt in with DataContext's built-in sanitizer:
@@ -224,6 +258,12 @@ datacontext.configure(
 ```
 
 Sink failures are dropped and logged. They should not block application work.
+
+## Community
+
+Use [GitHub Discussions](https://github.com/data-context-hq/datacontext/discussions) for questions, design feedback, and integration ideas.
+
+Use [GitHub Issues](https://github.com/data-context-hq/datacontext/issues) for bugs and focused feature requests.
 
 ## License
 

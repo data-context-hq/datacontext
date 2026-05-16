@@ -7,20 +7,20 @@ Thanks for helping improve DataContext.
 Install test dependencies:
 
 ```bash
-python -m pip install -U pip pytest
+python3 -m pip install -U pip pytest
 ```
 
 Run tests:
 
 ```bash
-pytest -q
+python3 -m pytest -q
 ```
 
 Build the package:
 
 ```bash
-python -m pip install -U build
-python -m build
+python3 -m pip install -U build
+python3 -m build
 ```
 
 ## Pull Requests
@@ -29,4 +29,3 @@ python -m build
 - Add or update tests for behavior changes.
 - Update the README when public APIs or event fields change.
 - Do not commit generated files, local environment files, or IDE metadata.
-

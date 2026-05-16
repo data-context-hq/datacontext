@@ -14,11 +14,15 @@ authors = [
 ]
 keywords = ["database", "observability", "tracing", "attribution", "opentelemetry"]
 classifiers = [
-  "Development Status :: 3 - Alpha",
   "Intended Audience :: Developers",
   "License :: OSI Approved :: Apache Software License",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Typing :: Typed",
 ]
 dependencies = []
@@ -27,6 +31,9 @@ dependencies = []
 Homepage = "https://github.com/data-context-hq/datacontext"
 Repository = "https://github.com/data-context-hq/datacontext"
 Issues = "https://github.com/data-context-hq/datacontext/issues"
+Changelog = "https://github.com/data-context-hq/datacontext/blob/main/CHANGELOG.md"
+Roadmap = "https://github.com/data-context-hq/datacontext/blob/main/ROADMAP.md"
+Security = "https://github.com/data-context-hq/datacontext/security"
 
 [project.optional-dependencies]
 otel = [
@@ -46,7 +53,9 @@ include = [
   "/tests",
   "/examples",
   "/CONTRIBUTING.md",
+  "/CHANGELOG.md",
   "/README.md",
+  "/ROADMAP.md",
   "/SECURITY.md",
   "/LICENSE",
   "/pyproject.toml",
