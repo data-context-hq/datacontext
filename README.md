@@ -1,13 +1,11 @@
-# DataContext
-
 [![Tests](https://github.com/data-context-hq/datacontext/actions/workflows/tests.yml/badge.svg)](https://github.com/data-context-hq/datacontext/actions/workflows/tests.yml)
 [![PyPI](https://img.shields.io/pypi/v/datacontext.svg)](https://pypi.org/project/datacontext/)
 [![Python](https://img.shields.io/pypi/pyversions/datacontext.svg)](https://pypi.org/project/datacontext/)
 [![License](https://img.shields.io/pypi/l/datacontext.svg)](https://github.com/data-context-hq/datacontext/blob/main/LICENSE)
 [![Discussions](https://img.shields.io/badge/GitHub-Discussions-2ea44f)](https://github.com/data-context-hq/datacontext/discussions)
 [![Roadmap](https://img.shields.io/badge/Roadmap-DataContext-blue)](https://github.com/data-context-hq/datacontext/blob/main/ROADMAP.md)
-
-Runtime attribution for data access in Python.
+# DataContext
+#### Runtime attribution for data access in Python
 
 [Why](#why-datacontext) | [How It Works](#how-it-works) | [Quick Start](#quick-start) | [Event Shape](#event-shape) | [Production Behavior](#production-behavior) | [Roadmap](https://github.com/data-context-hq/datacontext/blob/main/ROADMAP.md)
 
