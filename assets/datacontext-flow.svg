@@ -1,0 +1,64 @@
+<svg width="680" height="760" viewBox="0 0 680 760" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">DataContext query attribution flow</title>
+  <desc id="desc">Application code adds runtime context and query instrumentation. DataContext emits a sanitized query event with fingerprint, callsite, status, and trace correlation to logs, callbacks, and OpenTelemetry.</desc>
+  <style>
+    .bg { fill: #0d1117; }
+    .panel { fill: #161b22; stroke: #30363d; stroke-width: 1.5; }
+    .accent { fill: #0f2a44; stroke: #58a6ff; stroke-width: 1.7; }
+    .event { fill: #18202b; stroke: #79c0ff; stroke-width: 1.7; }
+    .sink { fill: #111820; stroke: #3d444d; stroke-width: 1.5; }
+    .title { fill: #f0f6fc; font: 700 21px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    .text { fill: #c9d1d9; font: 600 16px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    .small { fill: #8b949e; font: 500 13px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    .mono { fill: #c9d1d9; font: 600 14px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .line { stroke: #8b949e; stroke-width: 2; }
+    .arrow { fill: #8b949e; }
+  </style>
+
+  <rect class="bg" width="680" height="760" rx="18"/>
+
+  <rect class="panel" x="70" y="46" width="540" height="86" rx="12"/>
+  <text class="title" x="104" y="86">Application code</text>
+  <text class="small" x="104" y="111">requests, jobs, agents, tasks</text>
+
+  <rect class="panel" x="70" y="184" width="250" height="132" rx="12"/>
+  <text class="text" x="102" y="228">Runtime context</text>
+  <text class="mono" x="102" y="258">operation</text>
+  <text class="mono" x="102" y="282">actor / tenant</text>
+  <text class="mono" x="102" y="306">request_id</text>
+
+  <rect class="accent" x="360" y="184" width="250" height="132" rx="12"/>
+  <text class="text" x="392" y="228">Instrumentation</text>
+  <text class="mono" x="392" y="258">trace_query()</text>
+  <text class="mono" x="392" y="282">capture_query()</text>
+  <text class="mono" x="392" y="306">instrument_function()</text>
+
+  <rect class="event" x="70" y="392" width="540" height="152" rx="14"/>
+  <text class="title" x="104" y="436">datacontext.query event</text>
+  <text class="mono" x="104" y="470">query_fingerprint: sha256:...</text>
+  <text class="mono" x="104" y="494">query_text: sanitized by default</text>
+  <text class="mono" x="104" y="518">callsite + status + trace_id</text>
+
+  <rect class="sink" x="70" y="622" width="250" height="86" rx="12"/>
+  <text class="text" x="102" y="662">Logs and files</text>
+  <text class="small" x="102" y="687">stdout JSONL, file JSONL</text>
+
+  <rect class="sink" x="360" y="622" width="250" height="86" rx="12"/>
+  <text class="text" x="392" y="662">Pipelines</text>
+  <text class="small" x="392" y="687">callback sink, OpenTelemetry</text>
+
+  <path class="line" d="M248 132 V184"/>
+  <path class="arrow" d="M248 184 L242 172 H254 Z"/>
+  <path class="line" d="M432 132 V184"/>
+  <path class="arrow" d="M432 184 L426 172 H438 Z"/>
+
+  <path class="line" d="M195 316 V392"/>
+  <path class="arrow" d="M195 392 L189 380 H201 Z"/>
+  <path class="line" d="M485 316 V392"/>
+  <path class="arrow" d="M485 392 L479 380 H491 Z"/>
+
+  <path class="line" d="M248 544 V622"/>
+  <path class="arrow" d="M248 622 L242 610 H254 Z"/>
+  <path class="line" d="M432 544 V622"/>
+  <path class="arrow" d="M432 622 L426 610 H438 Z"/>
+</svg>

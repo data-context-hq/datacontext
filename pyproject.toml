@@ -50,13 +50,10 @@ packages = ["src/datacontext"]
 [tool.hatch.build.targets.sdist]
 include = [
   "/src",
-  "/tests",
-  "/examples",
-  "/CONTRIBUTING.md",
-  "/CHANGELOG.md",
   "/README.md",
-  "/ROADMAP.md",
-  "/SECURITY.md",
   "/LICENSE",
   "/pyproject.toml",
+]
+exclude = [
+  "/.gitignore",
 ]
