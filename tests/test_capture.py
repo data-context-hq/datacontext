@@ -67,7 +67,7 @@ def test_capture_query_includes_context_and_attributes(events: list[dict]) -> No
     assert event["attributes"] == {"tenant": "acme", "region": "us"}
 
 
-def test_raw_query_is_not_emitted_by_default(events: list[dict]) -> None:
+def test_sanitized_query_text_is_emitted_by_default(events: list[dict]) -> None:
     query = "select * from users where email = 'private@example.com'"
 
     datacontext.capture_query(
@@ -82,16 +82,16 @@ def test_raw_query_is_not_emitted_by_default(events: list[dict]) -> None:
 
     event_text = str(events[0])
     assert "private@example.com" not in event_text
-    assert "select *" not in event_text.lower()
+    assert events[0]["query_text"] == "select * from users where email = ?"
     assert "query_fingerprint" in events[0]
 
 
-def test_query_text_can_be_emitted_sanitized_by_config(events: list[dict]) -> None:
+def test_sanitized_query_text_can_be_disabled_by_config(events: list[dict]) -> None:
     datacontext.configure(
         service_name="svc",
         environment="test",
         sink=type("Sink", (), {"emit": lambda self, event: events.append(dict(event))})(),
-        include_query_text=True,
+        include_query_text=False,
     )
 
     datacontext.capture_query(
@@ -104,7 +104,7 @@ def test_query_text_can_be_emitted_sanitized_by_config(events: list[dict]) -> No
         status="ok",
     )
 
-    assert events[0]["query_text"] == "select * from users where email = ? and id = ?"
+    assert "query_text" not in events[0]
     assert "private@example.com" not in str(events[0])
 
 

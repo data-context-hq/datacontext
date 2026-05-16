@@ -23,7 +23,7 @@ class Config:
     service_name: str = DEFAULT_SERVICE_NAME
     environment: str = DEFAULT_ENVIRONMENT
     sink: Sink | None = None
-    include_query_text: bool = False
+    include_query_text: bool = True
     include_raw_query_text: bool = False
 
 
@@ -36,7 +36,7 @@ def configure(
     environment: str | None = None,
     instruments: Iterable[Any] | None = None,
     sink: Sink | None = None,
-    include_query_text: bool = False,
+    include_query_text: bool = True,
     include_raw_query_text: bool = False,
 ) -> Config:
     global _config

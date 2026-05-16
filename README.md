@@ -20,15 +20,12 @@ DataContext is early and intentionally small. The core event model is designed t
 ## How It Works
 
 ```mermaid
-flowchart LR
+flowchart TD
     app[Application code] --> ctx[Runtime context]
     app --> inst[DataContext instrumentation]
     ctx --> event[datacontext.query event]
     inst --> event
-    event --> stdout[stdout JSONL]
-    event --> file[file JSONL]
-    event --> callback[callback sink]
-    event --> otel[OpenTelemetry context]
+    event --> sinks[stdout JSONL<br/>file JSONL<br/>callback sink<br/>OpenTelemetry context]
 ```
 
 ## Why DataContext?
@@ -126,6 +123,7 @@ Example `datacontext.query` event:
   "db_system": "postgres",
   "client": "internal-db-wrapper",
   "query_fingerprint": "sha256:4f5b7f...",
+  "query_text": "select * from orders where id = ?",
   "duration_ms": 21.4,
   "callsite": {
     "file": "checkout.py",
@@ -193,15 +191,15 @@ datacontext.capture_query(
 
 ## Privacy and Query Text
 
-DataContext always emits `query_fingerprint` by default. Raw query text is not emitted unless you explicitly opt in.
+DataContext emits `query_fingerprint` and sanitized `query_text` by default. Raw query text is not emitted unless you explicitly opt in.
 
-To include normalized query shape text, opt in with DataContext's built-in sanitizer:
+To emit only the fingerprint without sanitized query text, disable query text:
 
 ```python
 datacontext.configure(
     service_name="checkout-api",
     environment="production",
-    include_query_text=True,
+    include_query_text=False,
 )
 ```
 

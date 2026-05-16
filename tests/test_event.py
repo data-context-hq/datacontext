@@ -28,6 +28,7 @@ def test_build_query_event_required_fields() -> None:
         "db_system": "postgres",
         "client": "client",
         "query_fingerprint": event["query_fingerprint"],
+        "query_text": "select ?",
         "duration_ms": 1000,
         "callsite": {"file": "app.py", "line": 1},
         "status": "ok",

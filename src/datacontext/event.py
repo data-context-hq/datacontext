@@ -30,7 +30,7 @@ def build_query_event(
     error: BaseException | str | None = None,
     attributes: Mapping[str, Any] | None = None,
     callsite: Mapping[str, Any] | None = None,
-    include_query_text: bool = False,
+    include_query_text: bool = True,
     include_raw_query_text: bool = False,
 ) -> dict[str, Any]:
     trace_context = context.current()
