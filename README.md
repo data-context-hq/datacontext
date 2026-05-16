@@ -9,42 +9,15 @@
 
 Runtime attribution for data access in Python.
 
+[Why](#why-datacontext) | [How It Works](#how-it-works) | [Quick Start](#quick-start) | [Event Shape](#event-shape) | [Production Behavior](#production-behavior) | [Roadmap](https://github.com/data-context-hq/datacontext/blob/main/ROADMAP.md)
+
 DataContext helps developers answer a simple question:
 
 > Which code path, request, job, or agent caused this query?
 
-DataContext gives humans and agents more context for understanding data access patterns and improving how applications use databases and data platforms.
+DataContext gives developers and platform teams more context for understanding data access patterns and improving how production services use databases and data platforms.
 
 DataContext is early and intentionally small. The core event model is designed to stay stable, while integrations and APIs will evolve with real-world usage.
-
-## How It Works
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/data-context-hq/datacontext/main/assets/datacontext-flow.svg" alt="DataContext query attribution flow" width="680">
-</p>
-
-## Why DataContext?
-
-Queries often lose their application context by the time they reach logs, traces, or the data platform itself.
-
-That makes it hard to answer:
-
-- Which request, job, or agent triggered this query?
-- Which code path caused this unexpected load?
-- Which actor, tenant, or session was involved?
-
-DataContext connects query events to runtime context, source callsites, and OpenTelemetry trace context when available.
-
-## Current Scope
-
-DataContext currently focuses on:
-
-- manual query instrumentation with `trace_query(...)` and `capture_query(...)`,
-- wrapping explicit data-access functions with `instrument_function(...)`,
-- JSONL, callback, and OpenTelemetry-oriented sinks,
-- correlating query events with runtime context and active OpenTelemetry spans.
-
-It does not automatically instrument database drivers yet.
 
 ## Install
 
@@ -83,6 +56,61 @@ After configuration, calls to `app.db.execute(...)` emit one completed query eve
 
 Wrappers preserve return values and re-raise original exceptions unchanged. If DataContext fails, your application should not.
 
+Emitted event:
+
+```json
+{
+  "event_name": "datacontext.query",
+  "service_name": "checkout-api",
+  "db_system": "postgres",
+  "client": "internal-db-wrapper",
+  "query_fingerprint": "sha256:4f5b7f...",
+  "query_text": "select * from orders where id = ?",
+  "duration_ms": 21.4,
+  "callsite": {
+    "file": "checkout.py",
+    "line": 42,
+    "function": "load_cart"
+  },
+  "status": "ok"
+}
+```
+
+## Why DataContext?
+
+Queries often lose their application context by the time they reach logs, traces, or the data platform itself.
+
+That makes it hard to answer:
+
+- Which request, job, or agent triggered this query?
+- Which code path caused this unexpected load?
+- Which actor, tenant, or session was involved?
+
+DataContext connects query events to runtime context, source callsites, and OpenTelemetry trace context when available.
+
+## How It Works
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/data-context-hq/datacontext/main/assets/datacontext-flow.svg" alt="DataContext query attribution flow" width="680">
+</p>
+
+## Supported Today
+
+DataContext currently supports:
+
+- manual query instrumentation with `trace_query(...)` and `capture_query(...)`,
+- wrapping explicit data-access functions with `instrument_function(...)`,
+- JSONL, callback, and OpenTelemetry-oriented sinks,
+- correlating query events with runtime context and active OpenTelemetry spans.
+
+It does not automatically instrument database drivers yet.
+
+## Planned Integrations
+
+The first integration priorities are SQLAlchemy guidance and Snowflake support exploration. Other database clients, ORMs, and data-platform libraries will be prioritized from real usage.
+
+Use [GitHub Discussions](https://github.com/data-context-hq/datacontext/discussions) or [feature requests](https://github.com/data-context-hq/datacontext/issues/new?template=feature_or_integration_request.md) to share the library, data-access pattern, sync/async behavior, and event fields you need.
+
 ## Add Runtime Context
 
 DataContext is most useful when queries are connected to runtime context:
@@ -101,7 +129,7 @@ with context.use(
 
 Any query captured inside the context includes that attribution.
 
-## What Gets Emitted
+## Event Shape
 
 DataContext emits one final event per query, at finish or error time.
 
@@ -142,6 +170,16 @@ Example `datacontext.query` event:
 ```
 
 On errors, DataContext emits `status: "error"` and includes compact error metadata before re-raising the original exception.
+
+## Production Behavior
+
+DataContext is designed to sit on production data-access paths without changing application behavior:
+
+- wrappers preserve return values and re-raise original exceptions,
+- DataContext capture failures fall back to a minimal event,
+- sink failures are logged and dropped,
+- sanitized `query_text` is emitted by default, while raw SQL is explicit opt-in,
+- OpenTelemetry trace context is used when present, but DataContext does not configure tracing or exporters.
 
 ## Schema Philosophy
 

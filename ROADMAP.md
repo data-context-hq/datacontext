@@ -4,9 +4,9 @@ DataContext is early and intentionally small. This roadmap focuses on making the
 
 ## Near Term
 
-- Improve examples for common application and worker patterns.
-- Add focused integration guidance for popular database wrappers and ORMs, starting with SQLAlchemy.
-- Explore Snowflake support and other notable data libraries based on community demand.
+- Add SQLAlchemy integration guidance for common engine/session patterns.
+- Explore Snowflake support for teams using Python services and data-platform workloads.
+- Improve examples for production application and worker patterns.
 - Tighten event schema documentation as real usage patterns emerge.
 - Keep the core event shape small and stable.
 
@@ -19,7 +19,12 @@ DataContext is early and intentionally small. This roadmap focuses on making the
 
 ## Prioritization
 
-Integration priorities should be driven by real usage. Open a GitHub Discussion or feature request with the library, current data-access pattern, and the event fields needed.
+Integration priorities should be driven by real usage. Open a GitHub Discussion or feature request with:
+
+- the library or data platform,
+- the current data-access pattern,
+- sync or async usage,
+- the event fields needed for production debugging or attribution.
 
 ## Non-Goals For Now
 
