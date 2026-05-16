@@ -61,7 +61,11 @@ Emitted event:
 ```json
 {
   "event_name": "datacontext.query",
+  "timestamp": "2026-05-15T10:31:04.203Z",
+  "started_at": "2026-05-15T10:31:04.182Z",
+  "ended_at": "2026-05-15T10:31:04.203Z",
   "service_name": "checkout-api",
+  "environment": "production",
   "db_system": "postgres",
   "client": "internal-db-wrapper",
   "query_fingerprint": "sha256:4f5b7f...",
@@ -69,8 +73,10 @@ Emitted event:
   "duration_ms": 21.4,
   "callsite": {
     "file": "checkout.py",
+    "path": "/app/checkout.py",
     "line": 42,
-    "function": "load_cart"
+    "function": "load_cart",
+    "stack": "checkout:42 load_cart -> routes:88 post_checkout"
   },
   "status": "ok"
 }
@@ -133,6 +139,14 @@ Any query captured inside the context includes that attribution.
 
 DataContext emits one final event per query, at finish or error time.
 
+Every normal event includes:
+
+- `event_name`, `timestamp`, `started_at`, `ended_at`,
+- `service_name`, `environment`, `db_system`, `client`,
+- `query_fingerprint`, `duration_ms`, `callsite`, and `status`.
+
+The `timestamp` is the event finish time and matches `ended_at`. By default, events also include sanitized `query_text`; it can be disabled globally or per captured query. Optional fields are only present when DataContext can derive them or when the caller supplies them.
+
 Example `datacontext.query` event:
 
 ```json
@@ -162,6 +176,11 @@ Example `datacontext.query` event:
   "operation": "checkout",
   "actor": "user:123",
   "request_id": "req_abc",
+  "job_id": "job_456",
+  "session_id": "sess_789",
+  "rows": 12,
+  "db_name": "checkout",
+  "db_host": "postgres.internal",
   "attributes": {
     "tenant": "acme",
     "region": "us-east-1"
@@ -170,6 +189,16 @@ Example `datacontext.query` event:
 ```
 
 On errors, DataContext emits `status: "error"` and includes compact error metadata before re-raising the original exception.
+
+```json
+{
+  "status": "error",
+  "error": {
+    "type": "ValueError",
+    "message": "boom"
+  }
+}
+```
 
 ## Production Behavior
 
