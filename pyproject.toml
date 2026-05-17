@@ -39,6 +39,9 @@ Security = "https://github.com/data-context-hq/datacontext/security"
 otel = [
   "opentelemetry-api>=1.20",
 ]
+sqlalchemy = [
+  "SQLAlchemy>=1.4",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

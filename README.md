@@ -10,7 +10,7 @@
 [Why](#why-datacontext) | [How It Works](#how-it-works) | [Quick Start](#quick-start) | [Event Shape](#event-shape) | [Production Behavior](#production-behavior) | [Roadmap](https://github.com/data-context-hq/datacontext/blob/main/ROADMAP.md)
 
 DataContext helps developers answer a simple question:
-
+    
 > Which code path, request, job, or agent caused this query?
 
 DataContext gives developers and platform teams more context for understanding data access patterns and improving how production services use databases and data platforms.
@@ -27,6 +27,12 @@ Optional OpenTelemetry support:
 
 ```bash
 pip install "datacontext[otel]"
+```
+
+Optional SQLAlchemy support:
+
+```bash
+pip install "datacontext[sqlalchemy]"
 ```
 
 ## Quick Start
@@ -104,6 +110,7 @@ DataContext currently supports:
 
 - manual query instrumentation with `trace_query(...)` and `capture_query(...)`,
 - wrapping explicit data-access functions with `instrument_function(...)`,
+- SQLAlchemy engine instrumentation through the optional `sqlalchemy` extra,
 - JSONL, callback, and OpenTelemetry-oriented sinks,
 - correlating query events with runtime context and active OpenTelemetry spans.
 
@@ -111,7 +118,7 @@ It does not automatically instrument database drivers yet.
 
 ## Planned Integrations
 
-The first integration priorities are SQLAlchemy guidance and Snowflake support exploration. Other database clients, ORMs, and data-platform libraries will be prioritized from real usage.
+Snowflake support is under exploration. Other database clients, ORMs, and data-platform libraries will be prioritized from real usage.
 
 Use [GitHub Discussions](https://github.com/data-context-hq/datacontext/discussions) or [feature requests](https://github.com/data-context-hq/datacontext/issues/new?template=feature_or_integration_request.md) to share the library, data-access pattern, sync/async behavior, and event fields you need.
 
@@ -248,6 +255,24 @@ datacontext.capture_query(
     rows=12,
 )
 ```
+
+## SQLAlchemy
+
+SQLAlchemy support is optional and only installed with the `sqlalchemy` extra. Pass an engine to `instrument_sqlalchemy(...)` during configuration:
+
+```python
+import datacontext
+
+datacontext.configure(
+    service_name="checkout-api",
+    environment="production",
+    instruments=[
+        datacontext.instrument_sqlalchemy(engine),
+    ],
+)
+```
+
+The integration listens to SQLAlchemy engine events and emits one DataContext event for each completed or failed statement. It also supports async engines by registering listeners on the underlying sync engine.
 
 ## Privacy and Query Text
 
