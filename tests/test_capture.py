@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from dataclasses import FrozenInstanceError
+
 import pytest
 
 import datacontext
@@ -134,6 +136,33 @@ def test_missing_service_metadata_warns_and_uses_defaults() -> None:
     assert any("environment" in message for message in messages)
     assert config.service_name == "unknown-service"
     assert config.environment == "unknown"
+
+
+def test_config_is_immutable() -> None:
+    config = datacontext.configure(service_name="svc", environment="test")
+
+    with pytest.raises(FrozenInstanceError):
+        config.service_name = "changed"
+
+
+def test_configured_temporarily_replaces_config(events: list[dict]) -> None:
+    outer_config = datacontext.get_config()
+    captured: list[dict] = []
+    sink = type("Sink", (), {"emit": lambda self, event: captured.append(dict(event))})()
+
+    with datacontext.configured(
+        service_name="temporary",
+        environment="test",
+        sink=sink,
+        include_query_text=False,
+    ) as inner_config:
+        assert datacontext.get_config() is inner_config
+        assert datacontext.get_config().service_name == "temporary"
+        assert datacontext.get_config().include_query_text is False
+
+    assert datacontext.get_config() is outer_config
+    assert events == []
+    assert captured == []
 
 
 def test_sink_failures_do_not_affect_application_code() -> None:
