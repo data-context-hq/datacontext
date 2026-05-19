@@ -42,6 +42,9 @@ otel = [
 sqlalchemy = [
   "SQLAlchemy>=1.4",
 ]
+snowflake = [
+  "snowflake-connector-python>=3",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
