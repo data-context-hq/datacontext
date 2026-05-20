@@ -45,6 +45,9 @@ sqlalchemy = [
 dagster = [
   "dagster>=1.8",
 ]
+dbt = [
+  "dbt-core>=1.7",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
