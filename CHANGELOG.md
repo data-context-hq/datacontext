@@ -13,3 +13,4 @@ Initial public release.
 - Added query fingerprinting with sanitized query text emitted by default and raw query text available by explicit opt-in.
 - Added stdout JSONL, file JSONL, callback, and OpenTelemetry-oriented sinks.
 - Added OpenTelemetry trace context correlation when available.
+- Added dbt execution context attribution through the optional `dbt` extra.
