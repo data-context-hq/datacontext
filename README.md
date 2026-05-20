@@ -35,13 +35,20 @@ Optional SQLAlchemy support:
 pip install "datacontext[sqlalchemy]"
 ```
 
+Optional BigQuery support:
+
+```bash
+pip install "datacontext[bigquery]"
+```
+
 Optional Dagster support:
 
 ```bash
 pip install "datacontext[dagster]"
-Optional Snowflake connector support:
+```
 
 Optional Snowflake support:
+
 ```bash
 pip install "datacontext[snowflake]"
 ```
@@ -128,6 +135,7 @@ DataContext currently supports:
 - manual query instrumentation with `trace_query(...)` and `capture_query(...)`,
 - wrapping explicit data-access functions with `instrument_function(...)`,
 - SQLAlchemy engine instrumentation through the optional `sqlalchemy` extra,
+- native BigQuery client instrumentation through the optional `bigquery` extra,
 - Dagster execution context attribution through the optional `dagster` extra,
 - dbt execution context attribution through the optional `dbt` extra,
 - native Snowflake connector instrumentation through the optional `snowflake` extra,
@@ -293,6 +301,33 @@ datacontext.configure(
 ```
 
 The integration listens to SQLAlchemy engine events and emits one DataContext event for each completed or failed statement. It also supports async engines by registering listeners on the underlying sync engine.
+
+## BigQuery
+
+BigQuery support is optional and only installed with the `bigquery` extra. Pass a `google.cloud.bigquery.Client` to `instrument_bigquery(...)` during configuration:
+
+```python
+from google.cloud import bigquery
+import datacontext
+
+client = bigquery.Client(project="analytics-prod")
+
+datacontext.configure(
+    service_name="warehouse-loader",
+    environment="production",
+    instruments=[
+        datacontext.instrument_bigquery(
+            client,
+            labels={"service": "warehouse-loader"},
+            job_id_prefix="warehouse_loader_",
+        ),
+    ],
+)
+```
+
+The integration instruments `Client.query_and_wait(...)` and `Client.query(...)`. For `query(...)`, DataContext emits the event when the returned job's `result()` method completes or raises, so the duration follows the waited query rather than only job submission. Captured events use `db_system: "bigquery"`, `client: "google-cloud-bigquery"`, the client project as `db_name`, and BigQuery job metadata under `attributes`.
+
+BigQuery job labels and `job_id_prefix` are opt-in. When configured, labels are injected through `QueryJobConfig`; if the call already passed a `job_config`, DataContext merges labels into it and user-defined labels win on matching keys. `job_id_prefix` is injected for `Client.query(...)` only if the call did not already pass `job_id` or `job_id_prefix`.
 
 ## Dagster
 
