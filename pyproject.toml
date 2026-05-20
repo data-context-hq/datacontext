@@ -48,6 +48,12 @@ bigquery = [
 dagster = [
   "dagster>=1.8",
 ]
+snowflake = [
+  "snowflake-connector-python>=3",
+]
+dbt = [
+  "dbt-core>=1.7",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

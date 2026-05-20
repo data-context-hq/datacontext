@@ -47,6 +47,18 @@ Optional Dagster support:
 pip install "datacontext[dagster]"
 ```
 
+Optional Snowflake support:
+
+```bash
+pip install "datacontext[snowflake]"
+```
+
+Optional dbt support:
+
+```bash
+pip install "datacontext[dbt]"
+```
+
 ## Quick Start
 
 Configure DataContext at an explicit data-access boundary:
@@ -125,14 +137,16 @@ DataContext currently supports:
 - SQLAlchemy engine instrumentation through the optional `sqlalchemy` extra,
 - native BigQuery client instrumentation through the optional `bigquery` extra,
 - Dagster execution context attribution through the optional `dagster` extra,
+- dbt execution context attribution through the optional `dbt` extra,
+- native Snowflake connector instrumentation through the optional `snowflake` extra,
 - JSONL, callback, and OpenTelemetry-oriented sinks,
 - correlating query events with runtime context and active OpenTelemetry spans.
 
-It does not automatically instrument arbitrary database drivers yet.
+Other database drivers are not automatically instrumented yet.
 
 ## Planned Integrations
 
-Snowflake support is under exploration. Other database clients, ORMs, and data-platform libraries will be prioritized from real usage.
+Other database clients, ORMs, and data-platform libraries will be prioritized from real usage.
 
 Use [GitHub Discussions](https://github.com/data-context-hq/datacontext/discussions) or [feature requests](https://github.com/data-context-hq/datacontext/issues/new?template=feature_or_integration_request.md) to share the library, data-access pattern, sync/async behavior, and event fields you need.
 
@@ -342,6 +356,55 @@ def orders(context, datacontext: DataContextResource):
 ```
 
 Captured queries include the Dagster run id as `job_id`, the asset key or op name as `operation`, and Dagster details under `attributes` such as `dagster.run_id`, `dagster.job_name`, `dagster.op_name`, `dagster.asset_key`, and `dagster.partition_key`. Dagster run tags are included only when `include_run_tags=True`.
+## Snowflake
+
+Snowflake connector support is optional and only installed with the `snowflake` extra. Configure it once before creating or using cursors:
+
+```python
+import snowflake.connector
+
+import datacontext
+
+datacontext.configure(
+    service_name="analytics-worker",
+    environment="production",
+    instruments=[
+        datacontext.instrument_snowflake(),
+    ],
+)
+
+conn = snowflake.connector.connect(
+    account="acme-prod",
+    user="loader",
+    password="...",
+    warehouse="analytics_wh",
+    database="analytics",
+    schema="public",
+)
+
+cursor = conn.cursor()
+cursor.execute("select count(*) from orders")
+```
+
+The integration wraps `snowflake-connector-python` cursor `execute`, `executemany`, and `execute_async`. It emits `db_system: "snowflake"`, `client: "snowflake-connector-python"`, `rows` from `cursor.rowcount` when available, and Snowflake metadata under `attributes`, including `snowflake.query_id` from `cursor.sfqid`.
+
+Richer Snowflake cost and performance metrics, such as bytes scanned, partitions scanned, execution time, spill bytes, load percent, and cloud-services credits, come from Snowflake Query History. DataContext does not query Query History inside the synchronous cursor wrapper; join those metrics later by `attributes.snowflake.query_id`.
+
+## dbt
+
+dbt support is optional and only installed with the `dbt` extra. DataContext does not replace dbt artifacts, exposures, lineage, or run results. dbt remains the source of truth for transformation identity; DataContext adds dbt metadata to query events emitted inside Python models or other dbt-adjacent execution code.
+
+Use the dependency-free context bridge inside a dbt Python model:
+
+```python
+import datacontext as dc
+
+def model(dbt, session):
+    with dc.use_dbt_context(dbt):
+        return run_queries(session)
+```
+
+Captured queries include the dbt invocation id as `job_id`, the model unique id or relation as `operation`, and dbt details under `attributes` such as `dbt.invocation_id`, `dbt.node.unique_id`, `dbt.node.name`, `dbt.node.resource_type`, `dbt.node.package_name`, `dbt.this`, and `dbt.target.name`.
 
 ## Privacy and Query Text
 
