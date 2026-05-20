@@ -42,6 +42,9 @@ otel = [
 sqlalchemy = [
   "SQLAlchemy>=1.4",
 ]
+dagster = [
+  "dagster>=1.8",
+  ]
 snowflake = [
   "snowflake-connector-python>=3",
 ]

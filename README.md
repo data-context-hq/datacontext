@@ -35,8 +35,13 @@ Optional SQLAlchemy support:
 pip install "datacontext[sqlalchemy]"
 ```
 
+Optional Dagster support:
+
+```bash
+pip install "datacontext[dagster]"
 Optional Snowflake connector support:
 
+Optional Snowflake support:
 ```bash
 pip install "datacontext[snowflake]"
 ```
@@ -117,6 +122,7 @@ DataContext currently supports:
 - manual query instrumentation with `trace_query(...)` and `capture_query(...)`,
 - wrapping explicit data-access functions with `instrument_function(...)`,
 - SQLAlchemy engine instrumentation through the optional `sqlalchemy` extra,
+- Dagster execution context attribution through the optional `dagster` extra,
 - native Snowflake connector instrumentation through the optional `snowflake` extra,
 - JSONL, callback, and OpenTelemetry-oriented sinks,
 - correlating query events with runtime context and active OpenTelemetry spans.
@@ -281,6 +287,33 @@ datacontext.configure(
 
 The integration listens to SQLAlchemy engine events and emits one DataContext event for each completed or failed statement. It also supports async engines by registering listeners on the underlying sync engine.
 
+## Dagster
+
+Dagster support is optional and only installed with the `dagster` extra. DataContext does not replace Dagster observability, materializations, asset lineage, or run state. Dagster remains the source of truth for orchestration identity; DataContext adds Dagster metadata to query events emitted inside assets and ops.
+
+Use the dependency-free context bridge inside a Dagster asset or op:
+
+```python
+import datacontext as dc
+
+@asset
+def orders(context):
+    with dc.use_dagster_context(context):
+        run_queries()
+```
+
+When Dagster is installed, you can also use the native resource:
+
+```python
+from datacontext import DataContextResource
+
+@asset
+def orders(context, datacontext: DataContextResource):
+    with datacontext.use_context(context):
+        run_queries()
+```
+
+Captured queries include the Dagster run id as `job_id`, the asset key or op name as `operation`, and Dagster details under `attributes` such as `dagster.run_id`, `dagster.job_name`, `dagster.op_name`, `dagster.asset_key`, and `dagster.partition_key`. Dagster run tags are included only when `include_run_tags=True`.
 ## Snowflake
 
 Snowflake connector support is optional and only installed with the `snowflake` extra. Configure it once before creating or using cursors:
