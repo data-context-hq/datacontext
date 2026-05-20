@@ -1,3 +1,4 @@
+from datacontext.bigquery import BigQueryInstrument, instrument_bigquery
 from datacontext.capture import capture_query, trace_query
 from datacontext.config import configure, configured, get_config, reset_config
 from datacontext.dagster import DataContextResource, use_dagster_context
@@ -8,6 +9,7 @@ from datacontext.sqlalchemy import SQLAlchemyInstrument, instrument_sqlalchemy
 from datacontext.snowflake import SnowflakeInstrument, instrument_snowflake
 
 __all__ = [
+    "BigQueryInstrument",
     "DataContextResource",
     "FunctionInstrument",
     "PostgresInstrument",
@@ -17,6 +19,7 @@ __all__ = [
     "configure",
     "configured",
     "get_config",
+    "instrument_bigquery",
     "instrument_function",
     "instrument_postgres",
     "instrument_sqlalchemy",
