@@ -35,6 +35,12 @@ Optional SQLAlchemy support:
 pip install "datacontext[sqlalchemy]"
 ```
 
+Optional PostgreSQL support:
+
+```bash
+pip install "datacontext[postgres]"
+```
+
 ## Quick Start
 
 Configure DataContext at an explicit data-access boundary:
@@ -111,10 +117,11 @@ DataContext currently supports:
 - manual query instrumentation with `trace_query(...)` and `capture_query(...)`,
 - wrapping explicit data-access functions with `instrument_function(...)`,
 - SQLAlchemy engine instrumentation through the optional `sqlalchemy` extra,
+- native PostgreSQL connection instrumentation through the optional `postgres` extra,
 - JSONL, callback, and OpenTelemetry-oriented sinks,
 - correlating query events with runtime context and active OpenTelemetry spans.
 
-It does not automatically instrument database drivers yet.
+It does not automatically instrument database drivers globally yet.
 
 ## Planned Integrations
 
@@ -273,6 +280,28 @@ datacontext.configure(
 ```
 
 The integration listens to SQLAlchemy engine events and emits one DataContext event for each completed or failed statement. It also supports async engines by registering listeners on the underlying sync engine.
+
+## PostgreSQL
+
+PostgreSQL support is optional and only installed with the `postgres` extra. It instruments a `psycopg` connection by wrapping connection-level `execute(...)` calls and cursors returned by `cursor()`.
+
+```python
+import datacontext
+import psycopg
+
+conn = psycopg.connect("postgresql://checkout@postgres.internal/checkout")
+
+datacontext.configure(
+    service_name="checkout-api",
+    environment="production",
+)
+datacontext.instrument_postgres(conn).apply()
+
+with conn.cursor() as cursor:
+    cursor.execute("select * from orders where id = %s", [order_id])
+```
+
+The integration emits one DataContext event per completed or failed `execute(...)` or `executemany(...)` call. Events use `db_system: "postgresql"`, `client: "psycopg"`, and include `db_name`, `db_host`, and `rows` when available from the connection or cursor.
 
 ## Privacy and Query Text
 

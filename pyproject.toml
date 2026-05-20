@@ -42,6 +42,9 @@ otel = [
 sqlalchemy = [
   "SQLAlchemy>=1.4",
 ]
+postgres = [
+  "psycopg>=3",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
