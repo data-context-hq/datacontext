@@ -4,17 +4,20 @@ from datacontext.dagster import DataContextResource, use_dagster_context
 from datacontext.dbt import use_dbt_context
 from datacontext.instrument import FunctionInstrument, instrument_function
 from datacontext.sqlalchemy import SQLAlchemyInstrument, instrument_sqlalchemy
+from datacontext.snowflake import SnowflakeInstrument, instrument_snowflake
 
 __all__ = [
     "DataContextResource",
     "FunctionInstrument",
     "SQLAlchemyInstrument",
+    "SnowflakeInstrument",
     "capture_query",
     "configure",
     "configured",
     "get_config",
     "instrument_function",
     "instrument_sqlalchemy",
+    "instrument_snowflake",
     "reset_config",
     "trace_query",
     "use_dagster_context",

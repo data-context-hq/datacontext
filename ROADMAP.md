@@ -5,7 +5,8 @@ DataContext is early and intentionally small. This roadmap focuses on making the
 ## Near Term
 
 - Gather feedback on the optional SQLAlchemy engine integration.
-- Explore Snowflake support for teams using Python services and data-platform workloads.
+- Gather feedback on native Snowflake connector instrumentation for teams using Python services and data-platform workloads.
+- Design post-execution Snowflake Query History enrichment keyed by `snowflake.query_id`.
 - Improve examples for production application and worker patterns.
 - Tighten event schema documentation as real usage patterns emerge.
 - Keep the core event shape small and stable.
