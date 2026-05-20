@@ -42,6 +42,9 @@ otel = [
 sqlalchemy = [
   "SQLAlchemy>=1.4",
 ]
+bigquery = [
+  "google-cloud-bigquery>=3.0",
+]
 dagster = [
   "dagster>=1.8",
 ]
