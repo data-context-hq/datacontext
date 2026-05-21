@@ -35,6 +35,12 @@ Optional SQLAlchemy support:
 pip install "datacontext[sqlalchemy]"
 ```
 
+Optional PostgreSQL support:
+
+```bash
+pip install "datacontext[postgres]"
+```
+
 Optional BigQuery support:
 
 ```bash
@@ -135,6 +141,7 @@ DataContext currently supports:
 - manual query instrumentation with `trace_query(...)` and `capture_query(...)`,
 - wrapping explicit data-access functions with `instrument_function(...)`,
 - SQLAlchemy engine instrumentation through the optional `sqlalchemy` extra,
+- native PostgreSQL connection instrumentation through the optional `postgres` extra,
 - native BigQuery client instrumentation through the optional `bigquery` extra,
 - Dagster execution context attribution through the optional `dagster` extra,
 - dbt execution context attribution through the optional `dbt` extra,
@@ -302,6 +309,28 @@ datacontext.configure(
 
 The integration listens to SQLAlchemy engine events and emits one DataContext event for each completed or failed statement. It also supports async engines by registering listeners on the underlying sync engine.
 
+## PostgreSQL
+
+PostgreSQL support is optional and only installed with the `postgres` extra. It instruments a `psycopg` connection by wrapping connection-level `execute(...)` calls and cursors returned by `cursor()`.
+
+```python
+import datacontext
+import psycopg
+
+conn = psycopg.connect("postgresql://checkout@postgres.internal/checkout")
+
+datacontext.configure(
+    service_name="checkout-api",
+    environment="production",
+)
+datacontext.instrument_postgres(conn).apply()
+
+with conn.cursor() as cursor:
+    cursor.execute("select * from orders where id = %s", [order_id])
+```
+
+The integration emits one DataContext event per completed or failed `execute(...)` or `executemany(...)` call. Events use `db_system: "postgresql"`, `client: "psycopg"`, and include `db_name`, `db_host`, and `rows` when available from the connection or cursor.
+
 ## BigQuery
 
 BigQuery support is optional and only installed with the `bigquery` extra. Pass a `google.cloud.bigquery.Client` to `instrument_bigquery(...)` during configuration:
@@ -356,6 +385,7 @@ def orders(context, datacontext: DataContextResource):
 ```
 
 Captured queries include the Dagster run id as `job_id`, the asset key or op name as `operation`, and Dagster details under `attributes` such as `dagster.run_id`, `dagster.job_name`, `dagster.op_name`, `dagster.asset_key`, and `dagster.partition_key`. Dagster run tags are included only when `include_run_tags=True`.
+
 ## Snowflake
 
 Snowflake connector support is optional and only installed with the `snowflake` extra. Configure it once before creating or using cursors:

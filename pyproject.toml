@@ -42,6 +42,9 @@ otel = [
 sqlalchemy = [
   "SQLAlchemy>=1.4",
 ]
+postgres = [
+  "psycopg>=3",
+]
 bigquery = [
   "google-cloud-bigquery>=3.0",
 ]
