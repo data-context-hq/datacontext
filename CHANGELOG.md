@@ -2,6 +2,13 @@
 
 All notable changes to DataContext will be documented in this file.
 
+## 0.1.1
+
+- Added native PostgreSQL connection and cursor instrumentation through the optional `postgres` extra.
+- Made the `postgres` extra install the psycopg binary package so it works without a separate system `libpq` install.
+- Added native BigQuery, Dagster, Snowflake, and dbt optional integration metadata to the published package.
+- Updated README badges to refresh correctly after the first PyPI release.
+
 ## 0.1.0
 
 Initial public release.

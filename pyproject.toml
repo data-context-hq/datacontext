@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "datacontext"
-version = "0.1.0"
+version = "0.1.1"
 description = "Runtime attribution for data access in Python."
 readme = "README.md"
 requires-python = ">=3.9"
@@ -43,7 +43,7 @@ sqlalchemy = [
   "SQLAlchemy>=1.4",
 ]
 postgres = [
-  "psycopg>=3",
+  "psycopg[binary]>=3",
 ]
 bigquery = [
   "google-cloud-bigquery>=3.0",
